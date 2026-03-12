@@ -1,53 +1,98 @@
-# 📄 Attendance PDF → Excel Converter
+# 📊 Attendance PDF → Excel Converter
 
-A web-based tool that converts Japanese attendance PDF reports into clean Excel spreadsheets with automatic working hours calculation.
+> 🇯🇵 Transform Japanese attendance PDFs into clean Excel reports with one click
 
-## Features
+![Python](https://img.shields.io/badge/Python-3.13-blue?logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)
+![Status](https://img.shields.io/badge/Status-Active-success)
+![Version](https://img.shields.io/badge/Version-1.0-orange)
 
-- **PDF Parsing** — Extracts employee data from raw attendance PDFs (Japanese format)
-- **Smart Time Handling**
-  - `当11:22` → `11:22` (same day)
-  - `翌03:57` → `27:57` (next day, +24h)
-  - `__:__` / `----` → blank (no data)
-- **Working Hours** — Calculated automatically from start/end times
-- **Excel Export** — Clean `.xlsx` output with headers, borders, and auto-width columns
-- **Preview** — See extracted data before downloading
-- **Drag & Drop** — Modern web UI with dark theme
+---
 
-## Tech Stack
+## ✨ Features
 
-- **Backend:** Python 3 + FastAPI + Uvicorn
-- **PDF Parsing:** pdfplumber
-- **Excel Generation:** openpyxl
-- **Frontend:** Vanilla HTML/CSS/JS (dark themed)
+| Feature | Description |
+|---------|-------------|
+| 📄 **PDF Parsing** | Extracts employee data from Japanese attendance PDFs |
+| ⏰ **Smart Time Handling** | Auto-converts `当`/`翌` prefixes to 24h+ format |
+| 🧮 **Auto Calculate** | Working hours computed from clock-in/out times |
+| 📥 **Excel Export** | Beautiful `.xlsx` with headers, borders & auto-width |
+| 👀 **Preview Mode** | See extracted data before downloading |
+| 🎨 **Modern UI** | Dark-themed drag & drop web interface |
 
-## API Endpoints
+---
 
-| Method | Path | Description |
-|--------|------|-------------|
-| `GET` | `/` | Web interface |
-| `POST` | `/api/convert` | Upload PDF → Download Excel |
-| `POST` | `/api/preview` | Upload PDF → JSON preview (max 50 records) |
-| `GET` | `/api/health` | Health check |
+## 🕐 Time Conversion Logic
 
-## Running Locally
+```
+当11:22  →  11:22   (Same day)
+翌03:57  →  27:57   (Next day +24h)
+__:__    →  blank    (No data)
+----     →  blank    (No data)
+```
+
+---
+
+## 🛠 Tech Stack
+
+```
+🐍 Python 3.13    — Core language
+⚡ FastAPI        — Web framework
+📑 pdfplumber     — PDF text/table extraction
+📗 openpyxl       — Excel generation
+🌐 HTML/CSS/JS    — Frontend (dark theme)
+```
+
+---
+
+## 🚀 Quick Start
 
 ```bash
-cd projects/attendance
+# Install dependencies
 pip install fastapi uvicorn pdfplumber openpyxl python-multipart
+
+# Run server
+cd projects/attendance
 uvicorn main:app --host 0.0.0.0 --port 8002
 ```
 
-## Project Structure
+Open `http://localhost:8002` and drop your PDF! 🎉
+
+---
+
+## 📡 API Endpoints
+
+| Method | Endpoint | Description |
+|:------:|----------|-------------|
+| `GET` | `/` | 🖥️ Web interface |
+| `POST` | `/api/convert` | 📤 Upload PDF → Download Excel |
+| `POST` | `/api/preview` | 👁️ Upload PDF → JSON preview |
+| `GET` | `/api/health` | 💚 Health check |
+
+---
+
+## 📁 Project Structure
 
 ```
 attendance/
-├── main.py        # FastAPI app with PDF parsing & Excel generation
-├── index.html     # Web UI (upload, preview, download)
-├── .gitignore
-└── README.md
+├── 📄 main.py        # FastAPI app + PDF parser + Excel builder
+├── 🎨 index.html     # Web UI (upload, preview, download)
+├── 🚫 .gitignore
+└── 📖 README.md      # You are here!
 ```
 
-## Version History
+---
 
-- **v1.0** (2026-03-13) — Initial stable baseline
+## 📜 Version History
+
+| Version | Date | Description |
+|:-------:|------|-------------|
+| `v1.0` | 2026-03-13 | 🎉 Initial stable release |
+
+---
+
+<div align="center">
+
+**Made with ❤️ for efficient attendance management**
+
+</div>
