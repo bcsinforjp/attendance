@@ -28,7 +28,7 @@ def log(msg: str):
 
 # ─── Time Parsing ─────────────────────────────────────────────
 
-def parse_jp_time(raw: str) -> tuple:
+def parse_jp_time(raw: str, is_leave: bool = False) -> tuple:
     """
     Parse Japanese attendance time strings.
     Returns (display_time, decimal_hours) or (None, None) if invalid.
@@ -38,6 +38,9 @@ def parse_jp_time(raw: str) -> tuple:
         翌03:57 -> ("27:57", 27.95)   # +24 for next day
         __:__   -> (None, None)
         ----    -> (None, None)
+
+    For Time to Leave (is_leave=True):
+        Hours 1-6 without 翌 prefix also get +24 (after midnight = next day).
     """
     if not raw or not isinstance(raw, str):
         return None, None
@@ -57,9 +60,13 @@ def parse_jp_time(raw: str) -> tuple:
     hour = int(m.group(2))
     minute = int(m.group(3))
 
-    # 翌 means next day, add 24 hours
-    if prefix == "翌":
-        hour += 24
+    # For Time to Leave: add 24 if 翌 prefix OR small hours (1-6) after midnight
+    if is_leave:
+        if prefix == "翌":
+            hour += 24
+        elif 1 <= hour <= 6:
+            hour += 24
+    # For Commute Time (start): 翌 prefix is rare but keep raw, no +24
 
     display = f"{hour}:{minute:02d}"
     decimal = hour + minute / 60.0
@@ -134,17 +141,17 @@ def extract_records(pdf_bytes: bytes) -> list:
                     start_dec = None
                     end_dec = None
 
-                    time_cells = []
+                    raw_time_cells = []
                     for cell in flat[code_idx + 2:]:
                         parsed, dec = parse_jp_time(cell)
                         if parsed:
-                            time_cells.append((parsed, dec))
+                            raw_time_cells.append(cell)
 
-                    if len(time_cells) >= 2:
-                        start_time, start_dec = time_cells[0]
-                        end_time, end_dec = time_cells[1]
-                    elif len(time_cells) == 1:
-                        start_time, start_dec = time_cells[0]
+                    if len(raw_time_cells) >= 2:
+                        start_time, start_dec = parse_jp_time(raw_time_cells[0])
+                        end_time, end_dec = parse_jp_time(raw_time_cells[1], is_leave=True)
+                    elif len(raw_time_cells) == 1:
+                        start_time, start_dec = parse_jp_time(raw_time_cells[0])
 
                     # Calculate working hours
                     wh = calc_working_hours(start_dec, end_dec)
