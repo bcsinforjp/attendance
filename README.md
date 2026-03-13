@@ -5,7 +5,7 @@
 ![Python](https://img.shields.io/badge/Python-3.13-blue?logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)
 ![Status](https://img.shields.io/badge/Status-Active-success)
-![Version](https://img.shields.io/badge/Version-1.0-orange)
+![Version](https://img.shields.io/badge/Version-1.1-orange)
 
 ---
 
@@ -24,9 +24,18 @@
 
 ## 🕐 Time Conversion Logic
 
+### Commute Time (Start)
 ```
-当11:22  →  11:22   (Same day)
+当11:22  →  11:22   (Same day, raw)
+翌07:47  →   7:47   (Raw, no +24)
+__:__    →  blank    (No data)
+```
+
+### Time to Leave (End)
+```
+当19:33  →  19:33   (Same day, raw)
 翌03:57  →  27:57   (Next day +24h)
+01:00    →  25:00   (After midnight +24h, no prefix)
 __:__    →  blank    (No data)
 ----     →  blank    (No data)
 ```
@@ -87,6 +96,7 @@ attendance/
 
 | Version | Date | Description |
 |:-------:|------|-------------|
+| `v1.1` | 2026-03-13 | 🔧 Fix Time to Leave +24: only end time, start stays raw |
 | `v1.0` | 2026-03-13 | 🎉 Initial stable release |
 
 ---
