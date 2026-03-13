@@ -1,11 +1,13 @@
-# 📊 Attendance PDF → Excel Converter
+# 📊 Attendance PDF → Excel Converter + Management Dashboard
 
-> 🇯🇵 Transform Japanese attendance PDFs into clean Excel reports with one click
+> 🇯🇵 Transform Japanese attendance PDFs into clean Excel reports + PostgreSQL database + Grafana management dashboard
 
 ![Python](https://img.shields.io/badge/Python-3.13-blue?logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=white)
+![Grafana](https://img.shields.io/badge/Grafana-F46800?logo=grafana&logoColor=white)
 ![Status](https://img.shields.io/badge/Status-Active-success)
-![Version](https://img.shields.io/badge/Version-1.1-orange)
+![Version](https://img.shields.io/badge/Version-2.0-orange)
 
 ---
 
@@ -18,6 +20,8 @@
 | 🧮 **Auto Calculate** | Working hours computed from clock-in/out times |
 | 📥 **Excel Export** | Beautiful `.xlsx` with headers, borders & auto-width |
 | 👀 **Preview Mode** | See extracted data before downloading |
+| 💾 **PostgreSQL Database** | All uploads auto-saved to database |
+| 📊 **Grafana Dashboard** | Management dashboard with charts & analytics |
 | 🎨 **Modern UI** | Dark-themed drag & drop web interface |
 
 ---
@@ -45,11 +49,13 @@ __:__    →  blank    (No data)
 ## 🛠 Tech Stack
 
 ```
-🐍 Python 3.13    — Core language
-⚡ FastAPI        — Web framework
-📑 pdfplumber     — PDF text/table extraction
-📗 openpyxl       — Excel generation
-🌐 HTML/CSS/JS    — Frontend (dark theme)
+🐍 Python 3.13      — Core language
+⚡ FastAPI          — Web framework + REST API
+📑 pdfplumber       — PDF text/table extraction
+📗 openpyxl         — Excel generation
+🐘 PostgreSQL 17    — Database
+📊 Grafana          — Management dashboard
+🌐 HTML/CSS/JS      — Frontend (dark theme)
 ```
 
 ---
@@ -58,7 +64,7 @@ __:__    →  blank    (No data)
 
 ```bash
 # Install dependencies
-pip install fastapi uvicorn pdfplumber openpyxl python-multipart
+pip install fastapi uvicorn pdfplumber openpyxl python-multipart psycopg2-binary
 
 # Run server
 cd projects/attendance
@@ -71,12 +77,38 @@ Open `http://localhost:8002` and drop your PDF! 🎉
 
 ## 📡 API Endpoints
 
+### Attendance
 | Method | Endpoint | Description |
 |:------:|----------|-------------|
 | `GET` | `/` | 🖥️ Web interface |
-| `POST` | `/api/convert` | 📤 Upload PDF → Download Excel |
+| `POST` | `/api/convert` | 📤 Upload PDF → Download Excel + Save to DB |
 | `POST` | `/api/preview` | 👁️ Upload PDF → JSON preview |
-| `GET` | `/api/health` | 💚 Health check |
+| `GET` | `/api/health` | 💚 Health check + DB status |
+
+### Management Dashboard
+| Method | Endpoint | Description |
+|:------:|----------|-------------|
+| `GET` | `/api/dashboard/summary` | 📊 Monthly summary (employees, avg hours, daily stats) |
+| `GET` | `/api/dashboard/employees` | 👥 All employees with summary |
+| `GET` | `/api/dashboard/employee/{code}` | 🔍 Individual employee details |
+| `GET` | `/api/dashboard/months` | 📅 Available months with data |
+
+---
+
+## 📊 Grafana Dashboard
+
+Access at `http://<server-ip>/grafana/`
+
+**Panels:**
+- 👥 Total Employees This Month
+- 📋 Total Records
+- ⏱️ Average Working Hours
+- 📅 Days in Month
+- 📈 Daily Attendance Count (chart)
+- 📊 Avg Working Hours by Day (chart)
+- 🏆 Top 10 Workers (table)
+- ⚠️ Late Arrivals After 9:00 (table)
+- 🔄 Upload Batches History
 
 ---
 
@@ -84,7 +116,7 @@ Open `http://localhost:8002` and drop your PDF! 🎉
 
 ```
 attendance/
-├── 📄 main.py        # FastAPI app + PDF parser + Excel builder
+├── 📄 main.py        # FastAPI app + PDF parser + Excel builder + DB + API
 ├── 🎨 index.html     # Web UI (upload, preview, download)
 ├── 🚫 .gitignore
 └── 📖 README.md      # You are here!
@@ -96,6 +128,7 @@ attendance/
 
 | Version | Date | Description |
 |:-------:|------|-------------|
+| `v2.0` | 2026-03-13 | 🎉 PostgreSQL + Grafana management dashboard + DB API |
 | `v1.1` | 2026-03-13 | 🔧 Fix Time to Leave +24: only end time, start stays raw |
 | `v1.0` | 2026-03-13 | 🎉 Initial stable release |
 
