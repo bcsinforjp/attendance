@@ -1,0 +1,24 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "Employee attendance analytics",
+  "editable": true,
+  "panels": [],
+  "title": "📊 Employee Work Analytics",
+  "uid": "employee-analytics",
+  "version": 43
+}
