@@ -1,0 +1,936 @@
+{
+    "meta": {
+        "type": "db",
+        "canSave": true,
+        "canEdit": true,
+        "canAdmin": true,
+        "canStar": true,
+        "canDelete": true,
+        "slug": "f09f938a-employee-work-analytics",
+        "url": "/grafana/d/employee-analytics/f09f938a-employee-work-analytics",
+        "expires": "0001-01-01T00:00:00Z",
+        "created": "2026-03-13T23:18:45+09:00",
+        "updated": "2026-03-14T06:07:50+09:00",
+        "updatedBy": "admin",
+        "createdBy": "admin",
+        "version": 45,
+        "hasAcl": false,
+        "isFolder": false,
+        "apiVersion": "v0alpha1",
+        "folderId": 0,
+        "folderUid": "",
+        "folderTitle": "General",
+        "folderUrl": "",
+        "provisioned": false,
+        "provisionedExternalId": "",
+        "annotationsPermissions": {
+            "dashboard": {
+                "canAdd": true,
+                "canEdit": true,
+                "canDelete": true
+            },
+            "organization": {
+                "canAdd": true,
+                "canEdit": true,
+                "canDelete": true
+            }
+        }
+    },
+    "dashboard": {
+        "annotations": {
+            "list": [
+                {
+                    "builtIn": 1,
+                    "datasource": {
+                        "type": "grafana",
+                        "uid": "-- Grafana --"
+                    },
+                    "enable": true,
+                    "hide": true,
+                    "iconColor": "rgba(0, 211, 255, 1)",
+                    "name": "Annotations & Alerts",
+                    "type": "dashboard"
+                }
+            ]
+        },
+        "description": "Employee attendance analytics",
+        "editable": true,
+        "fiscalYearStartMonth": 0,
+        "graphTooltip": 0,
+        "id": 1337934624985088,
+        "links": [],
+        "panels": [
+            {
+                "datasource": {
+                    "type": "grafana-postgresql-datasource",
+                    "uid": "cffwff9bf3z7kc"
+                },
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "fixedColor": "green",
+                            "mode": "fixed"
+                        },
+                        "decimals": 1,
+                        "mappings": [],
+                        "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                                {
+                                    "color": "red",
+                                    "value": 0
+                                },
+                                {
+                                    "color": "yellow",
+                                    "value": 6
+                                },
+                                {
+                                    "color": "green",
+                                    "value": 8
+                                }
+                            ]
+                        },
+                        "unit": "h"
+                    },
+                    "overrides": []
+                },
+                "gridPos": {
+                    "h": 4,
+                    "w": 4,
+                    "x": 0,
+                    "y": 0
+                },
+                "id": 1,
+                "options": {
+                    "colorMode": "background",
+                    "graphMode": "area",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "percentChangeColorMode": "standard",
+                    "reduceOptions": {
+                        "calcs": [
+                            "lastNotNull"
+                        ],
+                        "fields": "",
+                        "values": false
+                    },
+                    "showPercentChange": false,
+                    "textMode": "value",
+                    "wideLayout": true
+                },
+                "pluginVersion": "12.4.1",
+                "targets": [
+                    {
+                        "datasource": {
+                            "type": "grafana-postgresql-datasource",
+                            "uid": "cffwff9bf3z7kc"
+                        },
+                        "format": "table",
+                        "rawSql": "SELECT working_hours FROM attendance_records WHERE working_hours != '' ORDER BY record_date DESC LIMIT 1",
+                        "refId": "A"
+                    }
+                ],
+                "title": "\ud83d\udd50 Last Work Hours",
+                "type": "stat"
+            },
+            {
+                "datasource": {
+                    "type": "grafana-postgresql-datasource",
+                    "uid": "cffwff9bf3z7kc"
+                },
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "fixedColor": "blue",
+                            "mode": "fixed"
+                        },
+                        "mappings": [],
+                        "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                                {
+                                    "color": "blue",
+                                    "value": 0
+                                }
+                            ]
+                        }
+                    },
+                    "overrides": []
+                },
+                "gridPos": {
+                    "h": 4,
+                    "w": 4,
+                    "x": 4,
+                    "y": 0
+                },
+                "id": 2,
+                "options": {
+                    "colorMode": "background",
+                    "graphMode": "area",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "percentChangeColorMode": "standard",
+                    "reduceOptions": {
+                        "calcs": [
+                            "lastNotNull"
+                        ],
+                        "fields": "",
+                        "values": false
+                    },
+                    "showPercentChange": false,
+                    "textMode": "value",
+                    "wideLayout": true
+                },
+                "pluginVersion": "12.4.1",
+                "targets": [
+                    {
+                        "datasource": {
+                            "type": "grafana-postgresql-datasource",
+                            "uid": "cffwff9bf3z7kc"
+                        },
+                        "format": "table",
+                        "rawSql": "SELECT commute_time FROM attendance_records WHERE commute_time != '' ORDER BY record_date DESC LIMIT 1",
+                        "refId": "A"
+                    }
+                ],
+                "title": "\u2b07\ufe0f Last Clock In",
+                "type": "stat"
+            },
+            {
+                "datasource": {
+                    "type": "grafana-postgresql-datasource",
+                    "uid": "cffwff9bf3z7kc"
+                },
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "fixedColor": "purple",
+                            "mode": "fixed"
+                        },
+                        "mappings": [],
+                        "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                                {
+                                    "color": "purple",
+                                    "value": 0
+                                }
+                            ]
+                        }
+                    },
+                    "overrides": []
+                },
+                "gridPos": {
+                    "h": 4,
+                    "w": 4,
+                    "x": 8,
+                    "y": 0
+                },
+                "id": 3,
+                "options": {
+                    "colorMode": "background",
+                    "graphMode": "area",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "percentChangeColorMode": "standard",
+                    "reduceOptions": {
+                        "calcs": [
+                            "lastNotNull"
+                        ],
+                        "fields": "",
+                        "values": false
+                    },
+                    "showPercentChange": false,
+                    "textMode": "value",
+                    "wideLayout": true
+                },
+                "pluginVersion": "12.4.1",
+                "targets": [
+                    {
+                        "datasource": {
+                            "type": "grafana-postgresql-datasource",
+                            "uid": "cffwff9bf3z7kc"
+                        },
+                        "format": "table",
+                        "rawSql": "SELECT time_to_leave FROM attendance_records WHERE time_to_leave != '' ORDER BY record_date DESC LIMIT 1",
+                        "refId": "A"
+                    }
+                ],
+                "title": "\u2b06\ufe0f Last Clock Out",
+                "type": "stat"
+            },
+            {
+                "datasource": {
+                    "type": "grafana-postgresql-datasource",
+                    "uid": "cffwff9bf3z7kc"
+                },
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "fixedColor": "cyan",
+                            "mode": "fixed"
+                        },
+                        "mappings": [],
+                        "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                                {
+                                    "color": "cyan",
+                                    "value": 0
+                                }
+                            ]
+                        }
+                    },
+                    "overrides": []
+                },
+                "gridPos": {
+                    "h": 4,
+                    "w": 4,
+                    "x": 12,
+                    "y": 0
+                },
+                "id": 4,
+                "options": {
+                    "colorMode": "background",
+                    "graphMode": "area",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "percentChangeColorMode": "standard",
+                    "reduceOptions": {
+                        "calcs": [
+                            "lastNotNull"
+                        ],
+                        "fields": "",
+                        "values": false
+                    },
+                    "showPercentChange": false,
+                    "textMode": "value",
+                    "wideLayout": true
+                },
+                "pluginVersion": "12.4.1",
+                "targets": [
+                    {
+                        "datasource": {
+                            "type": "grafana-postgresql-datasource",
+                            "uid": "cffwff9bf3z7kc"
+                        },
+                        "format": "table",
+                        "rawSql": "SELECT record_date::text FROM attendance_records ORDER BY record_date DESC LIMIT 1",
+                        "refId": "A"
+                    }
+                ],
+                "title": "\ud83d\udcc5 Last Record Date",
+                "type": "stat"
+            },
+            {
+                "datasource": {
+                    "type": "grafana-postgresql-datasource",
+                    "uid": "cffwff9bf3z7kc"
+                },
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "fixedColor": "orange",
+                            "mode": "fixed"
+                        },
+                        "mappings": [],
+                        "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                                {
+                                    "color": "orange",
+                                    "value": 0
+                                }
+                            ]
+                        }
+                    },
+                    "overrides": []
+                },
+                "gridPos": {
+                    "h": 4,
+                    "w": 4,
+                    "x": 16,
+                    "y": 0
+                },
+                "id": 5,
+                "options": {
+                    "colorMode": "background",
+                    "graphMode": "area",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "percentChangeColorMode": "standard",
+                    "reduceOptions": {
+                        "calcs": [
+                            "lastNotNull"
+                        ],
+                        "fields": "",
+                        "values": false
+                    },
+                    "showPercentChange": false,
+                    "textMode": "value",
+                    "wideLayout": true
+                },
+                "pluginVersion": "12.4.1",
+                "targets": [
+                    {
+                        "datasource": {
+                            "type": "grafana-postgresql-datasource",
+                            "uid": "cffwff9bf3z7kc"
+                        },
+                        "format": "table",
+                        "rawSql": "SELECT COUNT(DISTINCT personal_code) FROM attendance_records",
+                        "refId": "A"
+                    }
+                ],
+                "title": "\ud83d\udc65 Total Employees",
+                "type": "stat"
+            },
+            {
+                "datasource": {
+                    "type": "grafana-postgresql-datasource",
+                    "uid": "cffwff9bf3z7kc"
+                },
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "fixedColor": "yellow",
+                            "mode": "fixed"
+                        },
+                        "mappings": [],
+                        "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                                {
+                                    "color": "yellow",
+                                    "value": 0
+                                }
+                            ]
+                        }
+                    },
+                    "overrides": []
+                },
+                "gridPos": {
+                    "h": 4,
+                    "w": 4,
+                    "x": 20,
+                    "y": 0
+                },
+                "id": 6,
+                "options": {
+                    "colorMode": "background",
+                    "graphMode": "area",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "percentChangeColorMode": "standard",
+                    "reduceOptions": {
+                        "calcs": [
+                            "lastNotNull"
+                        ],
+                        "fields": "",
+                        "values": false
+                    },
+                    "showPercentChange": false,
+                    "textMode": "value",
+                    "wideLayout": true
+                },
+                "pluginVersion": "12.4.1",
+                "targets": [
+                    {
+                        "datasource": {
+                            "type": "grafana-postgresql-datasource",
+                            "uid": "cffwff9bf3z7kc"
+                        },
+                        "format": "table",
+                        "rawSql": "SELECT COUNT(*) FROM attendance_records",
+                        "refId": "A"
+                    }
+                ],
+                "title": "\ud83d\udccb Total Records",
+                "type": "stat"
+            },
+            {
+                "datasource": {
+                    "type": "grafana-postgresql-datasource",
+                    "uid": "cffwff9bf3z7kc"
+                },
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "fixedColor": "green",
+                            "mode": "shades"
+                        },
+                        "custom": {
+                            "axisBorderShow": true,
+                            "axisCenteredZero": false,
+                            "axisColorMode": "text",
+                            "axisLabel": "",
+                            "axisPlacement": "auto",
+                            "barAlignment": 0,
+                            "barWidthFactor": 0.6,
+                            "drawStyle": "line",
+                            "fillOpacity": 20,
+                            "gradientMode": "hue",
+                            "hideFrom": {
+                                "legend": false,
+                                "tooltip": false,
+                                "viz": false
+                            },
+                            "insertNulls": false,
+                            "lineInterpolation": "smooth",
+                            "lineStyle": {
+                                "fill": "solid"
+                            },
+                            "lineWidth": 2,
+                            "pointSize": 6,
+                            "scaleDistribution": {
+                                "type": "linear"
+                            },
+                            "showPoints": "always",
+                            "showValues": false,
+                            "spanNulls": false,
+                            "stacking": {
+                                "group": "A",
+                                "mode": "none"
+                            },
+                            "thresholdsStyle": {
+                                "mode": "off"
+                            }
+                        },
+                        "decimals": 1,
+                        "displayName": "Hours",
+                        "fieldMinMax": false,
+                        "mappings": [],
+                        "min": 0,
+                        "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                                {
+                                    "color": "green",
+                                    "value": 0
+                                },
+                                {
+                                    "color": "red",
+                                    "value": 80
+                                }
+                            ]
+                        },
+                        "unit": "short"
+                    },
+                    "overrides": [
+                        {
+                            "matcher": {
+                                "id": "byName",
+                                "options": "time"
+                            },
+                            "properties": [
+                                {
+                                    "id": "unit",
+                                    "value": "dateTimeAsText"
+                                },
+                                {
+                                    "id": "custom.axisPlacement",
+                                    "value": "auto"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 0,
+                    "y": 4
+                },
+                "id": 12,
+                "interval": "1",
+                "options": {
+                    "legend": {
+                        "calcs": [
+                            "variance",
+                            "median",
+                            "max"
+                        ],
+                        "displayMode": "table",
+                        "placement": "bottom",
+                        "showLegend": true
+                    },
+                    "tooltip": {
+                        "hideZeros": false,
+                        "mode": "single",
+                        "sort": "none"
+                    }
+                },
+                "pluginVersion": "12.4.1",
+                "targets": [
+                    {
+                        "datasource": {
+                            "type": "grafana-postgresql-datasource",
+                            "uid": "cffwff9bf3z7kc"
+                        },
+                        "format": "time_series",
+                        "rawSql": "SELECT record_date AS time,\n       SUM(CAST(SPLIT_PART(working_hours, ':', 1) AS FLOAT) + CAST(SPLIT_PART(working_hours, ':', 2) AS FLOAT) / 60.0) AS \"Total Hours\"\nFROM attendance_records\nWHERE $__timeFilter(record_date)\n  AND working_hours != ''\n  AND ('${employee:csv}' = 'All' OR personal_code = ANY(STRING_TO_ARRAY('${employee:csv}', ',')))\nGROUP BY record_date\nORDER BY record_date",
+                        "refId": "A"
+                    }
+                ],
+                "title": "\ud83d\udcc8 Daily Work Hours",
+                "type": "timeseries"
+            },
+            {
+                "datasource": {
+                    "type": "grafana-postgresql-datasource",
+                    "uid": "cffwff9bf3z7kc"
+                },
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "fixedColor": "blue",
+                            "mode": "fixed"
+                        },
+                        "custom": {
+                            "axisBorderShow": false,
+                            "axisCenteredZero": false,
+                            "axisColorMode": "text",
+                            "axisLabel": "",
+                            "axisPlacement": "auto",
+                            "barAlignment": 0,
+                            "barWidthFactor": 0.6,
+                            "drawStyle": "line",
+                            "fillOpacity": 25,
+                            "gradientMode": "none",
+                            "hideFrom": {
+                                "legend": false,
+                                "tooltip": false,
+                                "viz": false
+                            },
+                            "insertNulls": false,
+                            "lineInterpolation": "linear",
+                            "lineWidth": 2,
+                            "pointSize": 5,
+                            "scaleDistribution": {
+                                "type": "linear"
+                            },
+                            "showPoints": "always",
+                            "showValues": false,
+                            "spanNulls": false,
+                            "stacking": {
+                                "group": "A",
+                                "mode": "none"
+                            },
+                            "thresholdsStyle": {
+                                "mode": "off"
+                            }
+                        },
+                        "mappings": [],
+                        "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                                {
+                                    "color": "green",
+                                    "value": 0
+                                },
+                                {
+                                    "color": "red",
+                                    "value": 80
+                                }
+                            ]
+                        }
+                    },
+                    "overrides": [
+                        {
+                            "matcher": {
+                                "id": "byName",
+                                "options": "time"
+                            },
+                            "properties": [
+                                {
+                                    "id": "displayName",
+                                    "value": "Date"
+                                },
+                                {
+                                    "id": "custom.axisPlacement",
+                                    "value": "auto"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 12,
+                    "y": 4
+                },
+                "id": 13,
+                "options": {
+                    "legend": {
+                        "calcs": [],
+                        "displayMode": "list",
+                        "placement": "bottom",
+                        "showLegend": true
+                    },
+                    "tooltip": {
+                        "hideZeros": false,
+                        "mode": "multi",
+                        "sort": "desc"
+                    }
+                },
+                "pluginVersion": "12.4.1",
+                "targets": [
+                    {
+                        "datasource": {
+                            "type": "grafana-postgresql-datasource",
+                            "uid": "cffwff9bf3z7kc"
+                        },
+                        "format": "time_series",
+                        "rawSql": "SELECT record_date AS time, COUNT(DISTINCT personal_code) AS \"Employees\"\nFROM attendance_records\nWHERE $__timeFilter(record_date)\n  AND ('${employee:csv}' = 'All' OR personal_code = ANY(STRING_TO_ARRAY('${employee:csv}', ',')))\nGROUP BY record_date\nORDER BY record_date",
+                        "refId": "A"
+                    }
+                ],
+                "title": "\ud83d\udc65 Daily Employee Count",
+                "type": "timeseries"
+            },
+            {
+                "datasource": {
+                    "type": "grafana-postgresql-datasource",
+                    "uid": "cffwff9bf3z7kc"
+                },
+                "fieldConfig": {
+                    "defaults": {
+                        "custom": {
+                            "align": "auto",
+                            "cellOptions": {
+                                "type": "auto"
+                            },
+                            "footer": {
+                                "reducers": []
+                            },
+                            "inspect": false
+                        },
+                        "mappings": [],
+                        "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                                {
+                                    "color": "green",
+                                    "value": 0
+                                },
+                                {
+                                    "color": "red",
+                                    "value": 80
+                                }
+                            ]
+                        }
+                    },
+                    "overrides": []
+                },
+                "gridPos": {
+                    "h": 8,
+                    "w": 24,
+                    "x": 0,
+                    "y": 12
+                },
+                "id": 20,
+                "options": {
+                    "cellHeight": "sm",
+                    "showHeader": true
+                },
+                "pluginVersion": "12.4.1",
+                "targets": [
+                    {
+                        "datasource": {
+                            "type": "grafana-postgresql-datasource",
+                            "uid": "cffwff9bf3z7kc"
+                        },
+                        "editorMode": "code",
+                        "format": "table",
+                        "rawQuery": true,
+                        "rawSql": "SELECT personal_code AS \"ID\",\n       full_name AS \"Name\",\n       record_date AS \"Date\",\n       commute_time AS \"Clock In\",\n       time_to_leave AS \"Clock Out\",\n       working_hours AS \"Work Hours\"\nFROM attendance_records\nWHERE $__timeFilter(record_date)\n  AND ('${employee:csv}' = 'All' OR personal_code = ANY(STRING_TO_ARRAY('${employee:csv}', ',')))\nORDER BY record_date DESC\nLIMIT 200",
+                        "refId": "A",
+                        "sql": {
+                            "columns": [
+                                {
+                                    "parameters": [],
+                                    "type": "function"
+                                }
+                            ],
+                            "groupBy": [
+                                {
+                                    "property": {
+                                        "type": "string"
+                                    },
+                                    "type": "groupBy"
+                                }
+                            ],
+                            "limit": 50
+                        }
+                    }
+                ],
+                "title": "\ud83d\udd0d Recent Records",
+                "type": "table"
+            },
+            {
+                "datasource": {
+                    "type": "grafana-postgresql-datasource",
+                    "uid": "cffwff9bf3z7kc"
+                },
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "mode": "palette-classic"
+                        },
+                        "custom": {
+                            "axisBorderShow": false,
+                            "axisCenteredZero": false,
+                            "axisColorMode": "text",
+                            "axisLabel": "",
+                            "axisPlacement": "auto",
+                            "barAlignment": 0,
+                            "barWidthFactor": 0.6,
+                            "drawStyle": "line",
+                            "fillOpacity": 15,
+                            "gradientMode": "none",
+                            "hideFrom": {
+                                "legend": false,
+                                "tooltip": false,
+                                "viz": false
+                            },
+                            "insertNulls": false,
+                            "lineInterpolation": "linear",
+                            "lineWidth": 2,
+                            "pointSize": 4,
+                            "scaleDistribution": {
+                                "type": "linear"
+                            },
+                            "showPoints": "auto",
+                            "showValues": false,
+                            "spanNulls": false,
+                            "stacking": {
+                                "group": "A",
+                                "mode": "none"
+                            },
+                            "thresholdsStyle": {
+                                "mode": "off"
+                            }
+                        },
+                        "mappings": [],
+                        "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                                {
+                                    "color": "red",
+                                    "value": 0
+                                },
+                                {
+                                    "color": "yellow",
+                                    "value": 6
+                                },
+                                {
+                                    "color": "green",
+                                    "value": 8
+                                }
+                            ]
+                        },
+                        "unit": "h"
+                    },
+                    "overrides": [
+                        {
+                            "matcher": {
+                                "id": "byName",
+                                "options": "time"
+                            },
+                            "properties": [
+                                {
+                                    "id": "displayName",
+                                    "value": "Date"
+                                },
+                                {
+                                    "id": "custom.axisPlacement",
+                                    "value": "auto"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "gridPos": {
+                    "h": 8,
+                    "w": 24,
+                    "x": 0,
+                    "y": 20
+                },
+                "id": 21,
+                "options": {
+                    "legend": {
+                        "calcs": [],
+                        "displayMode": "list",
+                        "placement": "bottom",
+                        "showLegend": true
+                    },
+                    "tooltip": {
+                        "hideZeros": false,
+                        "mode": "multi",
+                        "sort": "desc"
+                    }
+                },
+                "pluginVersion": "12.4.1",
+                "targets": [
+                    {
+                        "datasource": {
+                            "type": "grafana-postgresql-datasource",
+                            "uid": "cffwff9bf3z7kc"
+                        },
+                        "format": "time_series",
+                        "rawSql": "SELECT record_date AS time, full_name AS metric,\n       CAST(SPLIT_PART(working_hours, ':', 1) AS FLOAT) + CAST(SPLIT_PART(working_hours, ':', 2) AS FLOAT) / 60.0 AS \"Hours\"\nFROM attendance_records\nWHERE $__timeFilter(record_date)\n  AND working_hours != ''\n  AND ('${employee:csv}' = 'All' OR personal_code = ANY(STRING_TO_ARRAY('${employee:csv}', ',')))\nORDER BY record_date",
+                        "refId": "A"
+                    }
+                ],
+                "title": "\ud83d\udcca Hours by Employee",
+                "type": "timeseries"
+            }
+        ],
+        "preload": false,
+        "refresh": "5m",
+        "schemaVersion": 42,
+        "tags": [
+            "attendance",
+            "analytics",
+            "hr"
+        ],
+        "templating": {
+            "list": [
+                {
+                    "current": {
+                        "text": [
+                            "-- All Employees --"
+                        ],
+                        "value": [
+                            "All"
+                        ]
+                    },
+                    "datasource": {
+                        "type": "grafana-postgresql-datasource",
+                        "uid": "cffwff9bf3z7kc"
+                    },
+                    "includeAll": true,
+                    "label": "Employees (tick to select)",
+                    "multi": true,
+                    "name": "employee",
+                    "options": [],
+                    "query": "SELECT 'All' AS __value, '-- All Employees --' AS __text UNION ALL SELECT DISTINCT personal_code AS __value, personal_code || ' - ' || full_name AS __text FROM attendance_records ORDER BY 2",
+                    "refresh": 1,
+                    "regexApplyTo": "value",
+                    "type": "query"
+                }
+            ]
+        },
+        "time": {
+            "from": "now-90d",
+            "to": "now"
+        },
+        "timepicker": {},
+        "timezone": "browser",
+        "title": "\ud83d\udcca Employee Work Analytics",
+        "uid": "employee-analytics",
+        "version": 45,
+        "weekStart": ""
+    }
+}
