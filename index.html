@@ -3,366 +3,668 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Attendance PDF → Excel</title>
+    <title>Attendance PDF Converter - Upload & Convert</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         :root {
-            --bg: #0a0a0f;
-            --surface: #12121a;
-            --surface2: #1a1a28;
-            --accent: #00d4aa;
-            --accent2: #7c5cfc;
-            --warn: #ff6b6b;
-            --text: #e4e4ef;
-            --text-dim: #8888a0;
-            --border: #2a2a3a;
+            --primary: #6366f1;
+            --accent: #4f46e5;
+            --success: #10b981;
+            --danger: #ef4444;
+            --bg-light: #f5f7fa;
+            --bg-surface: #ffffff;
+            --text-dark: #1a1a2e;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
         }
-        nav {
-            padding: 1rem 2rem;
-            background: rgba(10,10,15,0.9);
-            border-bottom: 1px solid var(--border);
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
         }
-        nav a { color: var(--text-dim); text-decoration: none; margin-right: 1.5rem; font-size: 0.9rem; }
-        nav a:hover { color: var(--accent); }
+
+        header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 16px;
+            opacity: 0.95;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: white;
+            text-decoration: none;
+            margin-bottom: 20px;
+            opacity: 0.9;
+            transition: opacity 0.3s;
+        }
+
+        .back-link:hover {
+            opacity: 1;
+        }
 
         .container {
             max-width: 900px;
-            margin: 3rem auto;
-            padding: 0 2rem;
+            margin: 40px auto;
+            padding: 0 20px;
         }
 
-        h1 {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+        .card {
+            background: var(--bg-surface);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
-        .subtitle { color: var(--text-dim); margin-bottom: 2rem; }
 
-        /* Upload Area */
+        .card h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: var(--text-dark);
+        }
+
         .upload-zone {
-            border: 2px dashed var(--border);
-            border-radius: 16px;
-            padding: 3rem;
+            border: 2px dashed var(--primary);
+            border-radius: 8px;
+            padding: 40px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s;
-            background: var(--surface);
-            margin-bottom: 2rem;
+            background: rgba(99, 102, 241, 0.05);
         }
-        .upload-zone:hover, .upload-zone.dragover {
+
+        .upload-zone:hover {
             border-color: var(--accent);
-            background: rgba(0, 212, 170, 0.05);
+            background: rgba(99, 102, 241, 0.1);
         }
-        .upload-zone .icon { font-size: 3rem; margin-bottom: 1rem; }
-        .upload-zone h3 { margin-bottom: 0.5rem; }
-        .upload-zone p { color: var(--text-dim); font-size: 0.9rem; }
-        .upload-zone input { display: none; }
-        .upload-zone .browse {
+
+        .upload-zone.dragover {
+            border-color: var(--accent);
+            background: rgba(99, 102, 241, 0.15);
+        }
+
+        .upload-zone p {
+            margin: 10px 0;
+            color: var(--text-muted);
+        }
+
+        .upload-zone strong {
+            color: var(--primary);
+            font-size: 18px;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .button {
             display: inline-block;
-            margin-top: 1rem;
-            padding: 0.5rem 1.5rem;
-            background: var(--accent);
-            color: var(--bg);
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        /* Status */
-        .status {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-            display: none;
-        }
-        .status.show { display: block; }
-        .status.success { border-color: var(--accent); }
-        .status.error { border-color: var(--warn); }
-        .status.processing { border-color: var(--accent2); }
-
-        /* Progress */
-        .progress-bar {
-            height: 6px;
-            background: var(--surface2);
-            border-radius: 3px;
-            overflow: hidden;
-            margin-top: 1rem;
-        }
-        .progress-fill {
-            height: 100%;
-            background: var(--accent);
-            border-radius: 3px;
-            width: 0%;
-            transition: width 0.3s;
-        }
-        .progress-fill.animate {
-            animation: progress 2s ease-in-out;
-        }
-        @keyframes progress {
-            0% { width: 0%; }
-            50% { width: 70%; }
-            100% { width: 100%; }
-        }
-
-        /* Download Button */
-        .download-btn {
-            display: none;
-            width: 100%;
-            padding: 1rem;
-            background: var(--accent);
-            color: var(--bg);
+            padding: 12px 24px;
+            border-radius: 6px;
             border: none;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            font-weight: 700;
             cursor: pointer;
-            transition: transform 0.2s;
-            margin-bottom: 2rem;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-decoration: none;
         }
-        .download-btn:hover { transform: translateY(-2px); }
-        .download-btn.show { display: block; }
 
-        /* Preview Table */
-        .preview-section { display: none; }
-        .preview-section.show { display: block; }
-        .preview-section h3 {
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+        .button-primary {
+            background: var(--primary);
+            color: white;
         }
-        .table-wrapper {
-            overflow-x: auto;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            background: var(--surface);
+
+        .button-primary:hover {
+            background: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
         }
-        table {
+
+        .button-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .button-success:hover {
+            opacity: 0.9;
+        }
+
+        .button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .preview-section {
+            display: none;
+        }
+
+        .preview-section.show {
+            display: block;
+        }
+
+        .preview-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.85rem;
-        }
-        th {
-            background: var(--surface2);
-            padding: 0.8rem 1rem;
-            text-align: left;
-            font-weight: 600;
-            white-space: nowrap;
-            border-bottom: 1px solid var(--border);
-        }
-        td {
-            padding: 0.6rem 1rem;
-            border-bottom: 1px solid var(--border);
-            white-space: nowrap;
-        }
-        tr:last-child td { border-bottom: none; }
-        tr:hover td { background: rgba(0, 212, 170, 0.05); }
-        .count-badge {
-            background: var(--accent);
-            color: var(--bg);
-            padding: 0.2rem 0.6rem;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: 600;
+            margin-top: 20px;
+            font-size: 14px;
         }
 
-        /* Format Info */
-        .format-info {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-top: 2rem;
+        .preview-table th {
+            background: var(--bg-light);
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid var(--border);
         }
-        .format-info h3 { margin-bottom: 1rem; }
-        .format-info code {
-            background: var(--surface2);
-            padding: 0.2rem 0.5rem;
-            border-radius: 4px;
-            font-size: 0.85rem;
+
+        .preview-table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
         }
-        .format-info ul {
-            list-style: none;
-            padding: 0;
+
+        .preview-table tr:hover {
+            background: var(--bg-light);
         }
-        .format-info li {
-            padding: 0.3rem 0;
-            color: var(--text-dim);
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
         }
-        .format-info li::before {
-            content: "→ ";
-            color: var(--accent);
+
+        .stat-box {
+            background: var(--bg-light);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            border-left: 4px solid var(--primary);
+        }
+
+        .stat-box .value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-box .label {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-top: 5px;
+        }
+
+        .message {
+            padding: 15px 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .message.show {
+            display: block;
+        }
+
+        .message.success {
+            background: rgba(16, 185, 129, 0.1);
+            color: #047857;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .message.error {
+            background: rgba(239, 68, 68, 0.1);
+            color: #991b1b;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .message.info {
+            background: rgba(59, 130, 246, 0.1);
+            color: #1e40af;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid var(--bg-light);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        footer {
+            background: var(--bg-surface);
+            border-top: 1px solid var(--border);
+            padding: 20px;
+            text-align: center;
+            color: var(--text-muted);
+            margin-top: 40px;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .feature-box {
+            padding: 20px;
+            background: var(--bg-light);
+            border-radius: 8px;
+            padding-left: 50px;
+            position: relative;
+        }
+
+        .feature-box .icon {
+            position: absolute;
+            left: 15px;
+            font-size: 24px;
+        }
+
+        .feature-box h3 {
+            margin-bottom: 8px;
+            color: var(--text-dark);
+        }
+
+        .feature-box p {
+            font-size: 14px;
+            color: var(--text-muted);
         }
     </style>
 </head>
 <body>
-<nav>
-    <a href="/">← Home</a>
-    <a href="/attendance">Attendance Tool</a>
-    <a href="/dashboard">Dashboard</a>
-</nav>
+    <header>
+        <a href="/" class="back-link">← Back to Home</a>
+        <h1>📊 Attendance PDF Converter</h1>
+        <p>Upload Japanese attendance PDFs and convert them into formatted Excel files</p>
+    </header>
 
-<div class="container">
-    <h1>📄 Attendance PDF → Excel</h1>
-    <p class="subtitle">Upload raw attendance PDF → Get clean Excel with working hours</p>
+    <div class="container">
+        <!-- Features -->
+        <div class="card">
+            <h2>✨ Features</h2>
+            <div class="features">
+                <div class="feature-box">
+                    <div class="icon">📄</div>
+                    <h3>PDF Parsing</h3>
+                    <p>Extracts employee data from Japanese attendance PDFs</p>
+                </div>
+                <div class="feature-box">
+                    <div class="icon">🧾</div>
+                    <h3>Table Extraction</h3>
+                    <p>Reads tabular attendance rows directly from uploaded PDF pages</p>
+                </div>
+                <div class="feature-box">
+                    <div class="icon">👀</div>
+                    <h3>Preview Mode</h3>
+                    <p>Review the first rows before creating the Excel export</p>
+                </div>
+                <div class="feature-box">
+                    <div class="icon">📥</div>
+                    <h3>Excel Export</h3>
+                    <p>Creates a styled .xlsx file with Japanese headers</p>
+                </div>
+                <div class="feature-box">
+                    <div class="icon">⚡</div>
+                    <h3>FastAPI Backend</h3>
+                    <p>Processes uploads through a lightweight local API service</p>
+                </div>
+                <div class="feature-box">
+                    <div class="icon">💾</div>
+                    <h3>SQLite Database</h3>
+                    <p>Saves converted attendance batches and dashboard data on the server</p>
+                </div>
+            </div>
+        </div>
 
-    <!-- Upload Zone -->
-    <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
-        <div class="icon">📁</div>
-        <h3>Drop raw attendance PDF here</h3>
-        <p>or click to browse</p>
-        <label class="browse">Choose PDF File</label>
-        <input type="file" id="fileInput" accept=".pdf" onchange="handleFile(this.files[0])">
-    </div>
+        <!-- Upload Section -->
+        <div class="card">
+            <h2>📤 Upload & Convert</h2>
+            
+            <div id="message" class="message"></div>
 
-    <!-- Status -->
-    <div class="status" id="status">
-        <div id="statusText">Processing...</div>
-        <div class="progress-bar"><div class="progress-fill" id="progressBar"></div></div>
-    </div>
+            <div class="upload-zone" id="uploadZone">
+                <strong>Drag your PDF file(s) here</strong>
+                <p>or click to browse</p>
+                <p style="font-size: 12px; margin-top: 10px;">Supported: one or more PDF files (max 50MB each)</p>
+            </div>
+            <input type="file" id="fileInput" accept=".pdf" multiple>
 
-    <!-- Download Button -->
-    <button class="download-btn" id="downloadBtn" onclick="downloadFile()">
-        ⬇️ Download Excel File
-    </button>
+            <div class="stats" id="stats" style="display: none; margin-top: 20px;">
+                <div class="stat-box">
+                    <div class="value" id="recordCount">0</div>
+                    <div class="label" id="recordCountLabel">Rows In Output</div>
+                </div>
+                <div class="stat-box">
+                    <div class="value" id="employeeCount">0</div>
+                    <div class="label" id="employeeCountLabel">Rows With Data</div>
+                </div>
+                <div class="stat-box">
+                    <div class="value" id="processingTime">0s</div>
+                    <div class="label" id="processingTimeLabel">Files Selected</div>
+                </div>
+            </div>
 
-    <!-- Preview -->
-    <div class="preview-section" id="previewSection">
-        <h3>📊 Preview <span class="count-badge" id="countBadge">0</span> records</h3>
-        <div class="table-wrapper">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Personal Code</th>
-                        <th>Full Name</th>
-                        <th>Commute Time</th>
-                        <th>Time to Leave</th>
-                        <th>Working Hours</th>
-                    </tr>
-                </thead>
-                <tbody id="previewBody"></tbody>
-            </table>
+            <!-- Preview Section -->
+            <div id="previewSection" class="preview-section">
+                <h3 style="margin-top: 30px;">📋 Data Preview</h3>
+                <table class="preview-table">
+                    <thead>
+                        <tr>
+                            <th>Employee Code</th>
+                            <th>Name</th>
+                            <th>Commute Time</th>
+                            <th>Leave Time</th>
+                            <th>Working Hours</th>
+                        </tr>
+                    </thead>
+                    <tbody id="previewBody">
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="action-buttons">
+                <button id="previewBtn" class="button button-primary" style="display: none;">
+                    👀 Preview
+                </button>
+                <button id="convertBtn" class="button button-success" style="display: none;">
+                    ✓ Convert & Download
+                </button>
+                <button id="resetBtn" class="button" style="display: none; background: var(--text-muted);">
+                    🔄 Upload Another
+                </button>
+            </div>
+        </div>
+
+        <!-- Dashboard Link -->
+        <div class="card">
+            <h2>📊 Dashboard & Analytics</h2>
+            <p style="margin-bottom: 20px;">View comprehensive attendance analytics and employee statistics:</p>
+            <a href="/grafana" class="button button-primary" target="_blank">
+                📈 Open Grafana Dashboard
+            </a>
         </div>
     </div>
 
-    <!-- Format Info -->
-    <div class="format-info">
-        <h3>ℹ️ How it works</h3>
-        <ul>
-            <li>Upload raw attendance PDF (Japanese attendance system output)</li>
-            <li>Extracts: employee code, name, start time, end time</li>
-            <li><code>当11:22</code> → <code>11:22</code> (today)</li>
-            <li><code>翌03:57</code> → <code>27:57</code> (next day, +24 hours)</li>
-            <li><code>__:__</code> and <code>----</code> → blank (no data)</li>
-            <li>Working hours calculated automatically</li>
-            <li>Excel output matches template format</li>
-        </ul>
-    </div>
-</div>
+    <footer>
+        <p>Attendance PDF Converter v2.0 | FastAPI + Excel Export + Grafana</p>
+        <p style="margin-top: 10px; font-size: 12px;">© 2026 - Made with 🤖 on Raspberry Pi</p>
+    </footer>
 
-<script>
-let currentFile = null;
+    <script>
+        const uploadZone = document.getElementById('uploadZone');
+        const fileInput = document.getElementById('fileInput');
+        const previewBtn = document.getElementById('previewBtn');
+        const convertBtn = document.getElementById('convertBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const message = document.getElementById('message');
+        const stats = document.getElementById('stats');
+        const previewSection = document.getElementById('previewSection');
+        const previewBody = document.getElementById('previewBody');
+        const recordCountLabel = document.getElementById('recordCountLabel');
+        const employeeCountLabel = document.getElementById('employeeCountLabel');
+        const processingTimeLabel = document.getElementById('processingTimeLabel');
 
-// Drag and drop
-const zone = document.getElementById('uploadZone');
-zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
-zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
-zone.addEventListener('drop', e => {
-    e.preventDefault();
-    zone.classList.remove('dragover');
-    if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
-});
+        let selectedFiles = [];
+        let previewData = null;
 
-function handleFile(file) {
-    if (!file || !file.name.toLowerCase().endsWith('.pdf')) {
-        showStatus('Please select a PDF file.', 'error');
-        return;
-    }
-    currentFile = file;
-    showStatus(`Processing: ${file.name}`, 'processing');
-    document.getElementById('progressBar').classList.add('animate');
-
-    // Preview first
-    previewFile(file);
-    // Then convert
-    convertFile(file);
-}
-
-async function previewFile(file) {
-    const formData = new FormData();
-    formData.append('file', file);
-    try {
-        const resp = await fetch('/attendance/api/preview', { method: 'POST', body: formData });
-        const data = await resp.json();
-        if (data.records && data.records.length > 0) {
-            showPreview(data.records, data.count);
+        function getAppBasePath() {
+            return window.location.pathname.startsWith('/attendance') ? '/attendance' : '';
         }
-    } catch(e) {
-        console.error('Preview error:', e);
-    }
-}
 
-async function convertFile(file) {
-    const formData = new FormData();
-    formData.append('file', file);
-    try {
-        const resp = await fetch('/attendance/api/convert', { method: 'POST', body: formData });
-        if (resp.ok) {
-            const blob = await resp.blob();
-            const url = URL.createObjectURL(blob);
-            const btn = document.getElementById('downloadBtn');
-            btn.classList.add('show');
-            btn.onclick = () => {
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'attendance_report.xlsx';
-                a.click();
-            };
-            showStatus('✅ Conversion complete! Click below to download.', 'success');
-        } else {
-            const err = await resp.json();
-            showStatus('❌ ' + (err.detail || 'Conversion failed'), 'error');
+        function getApiUrl(path) {
+            return `${getAppBasePath()}${path}`;
         }
-    } catch(e) {
-        showStatus('❌ Error: ' + e.message, 'error');
-    }
-}
 
-function showStatus(msg, type) {
-    const el = document.getElementById('status');
-    document.getElementById('statusText').textContent = msg;
-    el.className = 'status show ' + type;
-}
+        async function getErrorMessage(response, fallbackMessage) {
+            try {
+                const errorData = await response.json();
+                return errorData.detail || fallbackMessage;
+            } catch (_error) {
+                return fallbackMessage;
+            }
+        }
 
-function showPreview(records, total) {
-    const tbody = document.getElementById('previewBody');
-    tbody.innerHTML = '';
-    document.getElementById('countBadge').textContent = total;
+        function clearResults() {
+            previewData = null;
+            previewBody.innerHTML = '';
+            previewSection.classList.remove('show');
+            stats.style.display = 'none';
+            convertBtn.style.display = 'none';
+            resetBtn.style.display = 'none';
+            recordCountLabel.textContent = 'Rows In Output';
+            employeeCountLabel.textContent = 'Rows With Data';
+            processingTimeLabel.textContent = 'Files Selected';
+        }
 
-    records.forEach(r => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>${r.code}</td>
-            <td>${r.name}</td>
-            <td style="text-align:center">${r.start_time || '—'}</td>
-            <td style="text-align:center">${r.end_time || '—'}</td>
-            <td style="text-align:center">${r.working_hours || '—'}</td>
-        `;
-        tbody.appendChild(tr);
-    });
+        function appendCell(row, value) {
+            const cell = document.createElement('td');
+            cell.textContent = value || '';
+            row.appendChild(cell);
+        }
 
-    document.getElementById('previewSection').classList.add('show');
-}
-</script>
+        // Upload zone click
+        uploadZone.addEventListener('click', () => fileInput.click());
+
+        // Drag and drop
+        uploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadZone.classList.add('dragover');
+        });
+
+        uploadZone.addEventListener('dragleave', () => {
+            uploadZone.classList.remove('dragover');
+        });
+
+        uploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            handleFiles(files);
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+        });
+
+        function handleFiles(files) {
+            if (files.length === 0) return;
+
+            const uploadedFiles = Array.from(files);
+            const invalidFile = uploadedFiles.find((file) => {
+                const fileName = file.name.toLowerCase();
+                const isPdfType = !file.type || file.type.includes('pdf');
+                return !isPdfType || !fileName.endsWith('.pdf');
+            });
+            if (invalidFile) {
+                selectedFiles = [];
+                clearResults();
+                previewBtn.style.display = 'none';
+                showMessage(`Please select PDF files only. Invalid file: ${invalidFile.name}`, 'error');
+                return;
+            }
+
+            const oversizedFile = uploadedFiles.find((file) => file.size > 50 * 1024 * 1024);
+            if (oversizedFile) {
+                selectedFiles = [];
+                clearResults();
+                previewBtn.style.display = 'none';
+                showMessage(`File size must be less than 50MB: ${oversizedFile.name}`, 'error');
+                return;
+            }
+
+            selectedFiles = uploadedFiles;
+            clearResults();
+            if (selectedFiles.length === 1) {
+                showMessage(`Selected: ${selectedFiles[0].name}`, 'info');
+            } else {
+                showMessage(`Selected ${selectedFiles.length} PDF files`, 'info');
+            }
+            previewBtn.style.display = 'inline-block';
+        }
+
+        previewBtn.addEventListener('click', previewPDF);
+        convertBtn.addEventListener('click', convertPDF);
+        resetBtn.addEventListener('click', resetForm);
+
+        async function previewPDF() {
+            if (!selectedFiles.length) return;
+
+            const formData = new FormData();
+            const isMultiple = selectedFiles.length > 1;
+            selectedFiles.forEach((file) => formData.append(isMultiple ? 'files' : 'file', file));
+
+            previewBtn.disabled = true;
+            previewBtn.innerHTML = '<span class="loading"></span> Previewing...';
+
+            try {
+                const response = await fetch(getApiUrl(isMultiple ? '/api/preview-multiple' : '/api/preview'), {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(await getErrorMessage(response, 'Preview failed'));
+                }
+
+                previewData = await response.json();
+
+                document.getElementById('recordCount').textContent = previewData.total_records;
+                document.getElementById('employeeCount').textContent = previewData.records_with_data ?? 0;
+                document.getElementById('processingTime').textContent = previewData.file_count || selectedFiles.length;
+                stats.style.display = 'grid';
+
+                previewBody.innerHTML = '';
+                previewData.records.forEach(record => {
+                    const row = document.createElement('tr');
+                    appendCell(row, record.employee_code);
+                    appendCell(row, record.name);
+                    appendCell(row, record.commute_time);
+                    appendCell(row, record.leave_time);
+                    appendCell(row, record.working_hours);
+                    previewBody.appendChild(row);
+                });
+
+                previewSection.classList.add('show');
+                convertBtn.style.display = 'inline-block';
+                if (isMultiple) {
+                    showMessage(
+                        `✓ Preview loaded - ${previewData.file_count} files selected. Showing ${previewData.preview_filename}`,
+                        'success'
+                    );
+                } else {
+                    showMessage(`✓ Preview loaded - ${previewData.total_records} rows in output`, 'success');
+                }
+
+            } catch (error) {
+                showMessage('Error previewing PDF: ' + error.message, 'error');
+            } finally {
+                previewBtn.disabled = false;
+                previewBtn.innerHTML = '👀 Preview';
+            }
+        }
+
+        async function convertPDF() {
+            if (!selectedFiles.length) return;
+
+            const formData = new FormData();
+            const isMultiple = selectedFiles.length > 1;
+            selectedFiles.forEach((file) => formData.append(isMultiple ? 'files' : 'file', file));
+
+            convertBtn.disabled = true;
+            convertBtn.innerHTML = '<span class="loading"></span> Converting...';
+
+            try {
+                const response = await fetch(getApiUrl(isMultiple ? '/api/convert-multiple' : '/api/convert'), {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(await getErrorMessage(response, 'Conversion failed'));
+                }
+
+                const result = await response.json();
+                showMessage('✓ ' + result.message, 'success');
+
+                const downloadLink = document.createElement('a');
+                downloadLink.href = getApiUrl(result.download_url);
+                downloadLink.download = result.filename;
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+
+                resetBtn.style.display = 'inline-block';
+
+            } catch (error) {
+                showMessage('Error converting PDF: ' + error.message, 'error');
+            } finally {
+                convertBtn.disabled = false;
+                convertBtn.innerHTML = '✓ Convert & Download';
+            }
+        }
+
+        function resetForm() {
+            selectedFiles = [];
+            previewData = null;
+            fileInput.value = '';
+            previewSection.classList.remove('show');
+            stats.style.display = 'none';
+            previewBtn.style.display = 'none';
+            convertBtn.style.display = 'none';
+            resetBtn.style.display = 'none';
+            message.classList.remove('show');
+            showMessage('Ready to upload', 'info');
+        }
+
+        function showMessage(text, type) {
+            message.textContent = text;
+            message.className = `message ${type} show`;
+            setTimeout(() => {
+                if (type === 'info') message.classList.remove('show');
+            }, 3000);
+        }
+
+        // Health check on load
+        window.addEventListener('load', async () => {
+            try {
+                const response = await fetch(getApiUrl('/api/health'));
+                const data = await response.json();
+                console.log('✓ API health:', data);
+            } catch (error) {
+                console.warn('API not accessible, running in demo mode');
+            }
+        });
+    </script>
 </body>
 </html>
