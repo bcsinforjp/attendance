@@ -1,10 +1,10 @@
-# 📊 Attendance PDF → Excel Converter + Management Dashboard
+# 📊 Attendance PDF → Excel Converter Stable + Management Dashboard
 
-> 🇯🇵 Transform Japanese attendance PDFs into clean Excel reports + PostgreSQL database + Grafana management dashboard
+> 🇯🇵 Transform Japanese attendance PDFs into clean roster-based Excel reports + SQLite database + Grafana management dashboard
 
 ![Python](https://img.shields.io/badge/Python-3.13-blue?logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=white)
+![SQLite](https://img.shields.io/badge/SQLite-003B57?logo=sqlite&logoColor=white)
 ![Grafana](https://img.shields.io/badge/Grafana-F46800?logo=grafana&logoColor=white)
 ![Status](https://img.shields.io/badge/Status-Active-success)
 ![Version](https://img.shields.io/badge/Version-2.0-orange)
@@ -20,9 +20,11 @@
 | 🧮 **Auto Calculate** | Working hours computed from clock-in/out times |
 | 📥 **Excel Export** | Beautiful `.xlsx` with headers, borders & auto-width |
 | 👀 **Preview Mode** | See extracted data before downloading |
-| 💾 **PostgreSQL Database** | All uploads auto-saved to database |
+| 🧾 **Roster Output** | Excel rows follow a fixed employee master list with blanks for missing data |
+| 🗂️ **Multi-File Upload** | Convert multiple PDFs at once and download a ZIP bundle |
+| 💾 **SQLite Database** | Converted uploads are saved locally for dashboard summaries |
 | 📊 **Grafana Dashboard** | Management dashboard with charts & analytics |
-| 🎨 **Modern UI** | Dark-themed drag & drop web interface |
+| 🎨 **Modern UI** | Drag-and-drop web interface with single and multi-file support |
 
 ---
 
@@ -53,7 +55,7 @@ __:__    →  blank    (No data)
 ⚡ FastAPI          — Web framework + REST API
 📑 pdfplumber       — PDF text/table extraction
 📗 openpyxl         — Excel generation
-🐘 PostgreSQL 17    — Database
+🗄️ SQLite          — Embedded database
 📊 Grafana          — Management dashboard
 🌐 HTML/CSS/JS      — Frontend (dark theme)
 ```
@@ -64,7 +66,7 @@ __:__    →  blank    (No data)
 
 ```bash
 # Install dependencies
-pip install fastapi uvicorn pdfplumber openpyxl python-multipart psycopg2-binary
+pip install fastapi uvicorn pdfplumber openpyxl python-multipart
 
 # Run server
 cd projects/attendance
@@ -82,7 +84,9 @@ Open `http://localhost:8002` and drop your PDF! 🎉
 |:------:|----------|-------------|
 | `GET` | `/` | 🖥️ Web interface |
 | `POST` | `/api/convert` | 📤 Upload PDF → Download Excel + Save to DB |
+| `POST` | `/api/convert-multiple` | 🗂️ Upload many PDFs → Download ZIP bundle + Save to DB |
 | `POST` | `/api/preview` | 👁️ Upload PDF → JSON preview |
+| `POST` | `/api/preview-multiple` | 👁️ Preview a multi-file upload batch |
 | `GET` | `/api/health` | 💚 Health check + DB status |
 
 ### Management Dashboard
@@ -118,6 +122,7 @@ Access at `http://<server-ip>/grafana/`
 attendance/
 ├── 📄 main.py        # FastAPI app + PDF parser + Excel builder + DB + API
 ├── 🎨 index.html     # Web UI (upload, preview, download)
+├── 👥 employee_roster.json  # Fixed output roster for Excel generation
 ├── 🚫 .gitignore
 └── 📖 README.md      # You are here!
 ```
@@ -128,6 +133,7 @@ attendance/
 
 | Version | Date | Description |
 |:-------:|------|-------------|
+| `stable-roster` | 2026-03-31 | 🎯 Fixed roster-based Excel output + SQLite persistence + multi-file ZIP export |
 | `v2.0` | 2026-03-13 | 🎉 PostgreSQL + Grafana management dashboard + DB API |
 | `v1.1` | 2026-03-13 | 🔧 Fix Time to Leave +24: only end time, start stays raw |
 | `v1.0` | 2026-03-13 | 🎉 Initial stable release |
